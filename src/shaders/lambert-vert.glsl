@@ -28,6 +28,7 @@ in vec4 vs_Nor;             // The array of vertex normals passed to the shader
 in vec4 vs_Col;             // The array of vertex colors passed to the shader.
 
 out vec4 fs_Pos;
+out vec4 final_Pos;
 out vec4 fs_Nor;            // The array of normals that has been transformed by u_ModelInvTr. This is implicitly passed to the fragment shader.
 out vec4 fs_LightVec;       // The direction in which our virtual light lies, relative to each vertex. This is implicitly passed to the fragment shader.
 out vec4 fs_Col;            // The color of each vertex. This is implicitly passed to the fragment shader.
@@ -42,12 +43,20 @@ void main()
 
     float tick = float(u_Tick);
 
-    float timePulse = abs(sin(tick / 120.f));
+    float timePulse = abs((tick * 0.002f));
     fs_Time = timePulse;
     vec3 funkyPos = vs_Pos.xyz;
+    vec3 flame = funkyPos;
 
-    funkyPos.z *= mix(1.f, 0.25, timePulse);
-    funkyPos.y *= 1.f - funkyPos.z;
+    // I got the base of this for loop from this Shadertoy:
+    // https://www.shadertoy.com/view/3XXSWS
+    float decay = 0.6;
+    for (float d = 1.5; d < 15.; d /= decay ) {
+            flame += cos((flame.yzx - vec3(timePulse/.1, timePulse, d) ) * d ) / d;
+    }
+
+    float normY = (funkyPos.y + 1.f) * 0.5;
+    funkyPos = mix(funkyPos, flame, normY);
 
     mat3 invTranspose = mat3(u_ModelInvTr);
     fs_Nor = vec4(invTranspose * vec3(vs_Nor), 0);          // Pass the vertex normals to the fragment shader for interpolation.
@@ -64,5 +73,6 @@ void main()
 
     gl_Position = u_ViewProj * modelposition;// gl_Position is a built-in variable of OpenGL which is
                                              // used to render the final positions of the geometry's vertices
-    fs_Pos = gl_Position;
+    fs_Pos = u_ViewProj * u_Model * vs_Pos;
+    final_Pos = gl_Position;
 }

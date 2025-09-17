@@ -14,7 +14,8 @@ import ShaderProgram, {Shader} from './rendering/gl/ShaderProgram';
 const controls = {
   tesselations: 5,
   'Load Scene': loadScene, // A function pointer, essentially
-  color : [255, 0, 1, 255],
+  baseColor : [155, 0, 0, 255],
+  edgeColor : [230, 230, 0, 255],
 };
 
 let icosphere: Icosphere;
@@ -45,7 +46,8 @@ function main() {
   const gui = new DAT.GUI();
   gui.add(controls, 'tesselations', 0, 8).step(1);
   gui.add(controls, 'Load Scene');
-  gui.addColor(controls, 'color');
+  gui.addColor(controls, 'baseColor');
+  gui.addColor(controls, 'edgeColor')
 
   // get canvas and webgl context
   const canvas = <HTMLCanvasElement> document.getElementById('canvas');
@@ -63,7 +65,7 @@ function main() {
   const camera = new Camera(vec3.fromValues(0, 0, 5), vec3.fromValues(0, 0, 0));
 
   const renderer = new OpenGLRenderer(canvas);
-  renderer.setClearColor(0.2, 0.2, 0.2, 1);
+  renderer.setClearColor(0.4, 0.2, 0.2, 1);
   gl.enable(gl.DEPTH_TEST);
 
   const lambert = new ShaderProgram([
@@ -80,16 +82,18 @@ function main() {
     if(controls.tesselations != prevTesselations)
     {
       prevTesselations = controls.tesselations;
-      // icosphere = new Icosphere(vec3.fromValues(0, 0, 0), 1, prevTesselations);
-      // icosphere.create();
-      cube = new Cube(vec3.fromValues(1, 0, 0));
-      cube.create();
+      icosphere = new Icosphere(vec3.fromValues(0, 0, 0), 1, prevTesselations);
+      icosphere.create();
+      //cube = new Cube(vec3.fromValues(1, 0, 0));
+      //cube.create();
     }
+
     renderer.render(camera, lambert, [
-      //icosphere,
+      icosphere,
       // square,
-      cube,
-    ], controls.color.map(value => value / 255), tickCount);
+      //cube,
+    ], controls.baseColor.map(value => value / 255),
+    controls.edgeColor.map(value => value / 255), tickCount);
     stats.end();
 
     ++tickCount;

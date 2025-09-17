@@ -12,6 +12,7 @@
 precision highp float;
 
 uniform vec4 u_Color; // The color with which to render this instance of geometry.
+uniform vec4 u_EdgeColor;
 
 // These are the interpolated values out of the rasterizer, so you can't know
 // their specific values without knowing the vertices that contributed to them
@@ -19,6 +20,7 @@ in vec4 fs_Nor;
 in vec4 fs_LightVec;
 in vec4 fs_Col;
 in vec4 fs_Pos;
+in vec4 final_Pos;
 in float fs_Time;
 
 out vec4 out_Col; // This is the final output color that you will see on your
@@ -65,20 +67,15 @@ float perlinNoise3D(vec3 p) {
 void main()
 {
     // Material base color (before shading)
-        vec4 diffuseColor = u_Color;//vec4(perlinNoise3D(u_Color.xyz), 1);
-        float procCol = perlinNoise3D(fs_Pos.xyz) * 3.f;
-
-        // Calculate the diffuse term for Lambert shading
-        float diffuseTerm = dot(normalize(fs_Nor), normalize(fs_LightVec));
-        // Avoid negative lighting values
-        // diffuseTerm = clamp(diffuseTerm, 0, 1);
+        vec4 diffuseColor = u_Color;
+        float timePulse = fs_Time;
 
         float ambientTerm = 0.2;
 
-        float lightIntensity = diffuseTerm + ambientTerm;   //Add a small float value to the color multiplier
-                                                            //to simulate ambient lighting. This ensures that faces that are not
-                                                            //lit by our point light are not completely black.
+        float diff = length(final_Pos.xyz - fs_Pos.xyz) * 0.35f;
+        diff = 1.15 * (pow(diff / 2.f - 1.f, 3.f) + 1.f);
+        diffuseColor = mix(u_Color, u_EdgeColor, diff);
 
         // Compute final shaded color
-        out_Col = vec4(diffuseColor.rgb * lightIntensity * procCol, diffuseColor.a);
+        out_Col = diffuseColor;
 }

@@ -29,6 +29,7 @@ class ShaderProgram {
   unifModelInvTr: WebGLUniformLocation;
   unifViewProj: WebGLUniformLocation;
   unifColor: WebGLUniformLocation;
+  unifEdgeCol: WebGLUniformLocation;
   unifTick: WebGLUniformLocation;
 
   constructor(shaders: Array<Shader>) {
@@ -49,6 +50,7 @@ class ShaderProgram {
     this.unifModelInvTr = gl.getUniformLocation(this.prog, "u_ModelInvTr");
     this.unifViewProj   = gl.getUniformLocation(this.prog, "u_ViewProj");
     this.unifColor      = gl.getUniformLocation(this.prog, "u_Color");
+    this.unifEdgeCol    = gl.getUniformLocation(this.prog, "u_EdgeColor");
     this.unifTick       = gl.getUniformLocation(this.prog, "u_Tick");
   }
 
@@ -84,6 +86,13 @@ class ShaderProgram {
     this.use();
     if (this.unifColor !== -1) {
       gl.uniform4fv(this.unifColor, color);
+    }
+  }
+
+  setEdgeColor(color: vec4) {
+    this.use();
+    if (this.unifEdgeCol !== -1) {
+      gl.uniform4fv(this.unifEdgeCol, color);
     }
   }
 
