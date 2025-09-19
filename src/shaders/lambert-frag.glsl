@@ -74,7 +74,7 @@ void main()
 
         float diff = length(final_Pos.xyz - fs_Pos.xyz) * 0.35f;
         diff = 1.15 * (pow(diff / 2.f - 1.f, 3.f) + 1.f);
-        diffuseColor = mix(u_Color, u_EdgeColor, diff);
+        diffuseColor = mix(u_Color, u_EdgeColor, min(diff * diff * 2.5, 0.9));
 
         // Compute final shaded color
         out_Col = diffuseColor;

@@ -20,6 +20,9 @@ uniform mat4 u_ViewProj;    // The matrix that defines the camera's transformati
                             // but in HW3 you'll have to generate one yourself
 
 uniform int u_Tick;         // This was written by me to give me a number for frame count
+uniform float u_Fin;
+uniform float u_Tail;
+uniform float u_Speed;
 
 in vec4 vs_Pos;             // The array of vertex positions passed to the shader
 
@@ -43,20 +46,38 @@ void main()
 
     float tick = float(u_Tick);
 
-    float timePulse = abs((tick * 0.002f));
+    float timePulse = abs((tick * 0.001f)) * u_Speed;
     fs_Time = timePulse;
     vec3 funkyPos = vs_Pos.xyz;
     vec3 flame = funkyPos;
 
     // I got the base of this for loop from this Shadertoy:
     // https://www.shadertoy.com/view/3XXSWS
-    float decay = 0.6;
-    for (float d = 1.5; d < 15.; d /= decay ) {
-            flame += cos((flame.yzx - vec3(timePulse/.1, timePulse, d) ) * d ) / d;
+    // I experimented with different values, but the original had the best look
+    // changing them more than +/- 20% glitches things out and can also crash your pc... :(
+    float decay = 0.6;              // WARNING: do not increase this, it will crash your machine
+    for (float d = 1.25; d < 15.; d /= decay ) {
+            flame += cos((flame.yzx - vec3(d, timePulse/.1, timePulse) ) * d ) / d;
+    }
+    
+    funkyPos.x -= .75f;
+    fs_Pos = u_ViewProj * u_Model * vec4(funkyPos.xyz - vec3(0.75, 0, 0), vs_Pos.w);
+    funkyPos.x *= 2.f;
+    float tailStart = u_Tail;   //-0.5f;
+    float finStart = u_Fin;     //0.85;
+    if (funkyPos.x >= tailStart)
+    {
+        float normX = funkyPos.x - tailStart;
+        normX *= min(normX, 1.0);
+        funkyPos = mix(funkyPos, flame, normX);
+    }
+    else if (abs(funkyPos.z) >= finStart)
+    {
+        float normZ = abs(funkyPos.z) - finStart;
+        normZ *= min(normZ, 1.0);
+        funkyPos = mix(funkyPos, flame * 20., normZ);
     }
 
-    float normY = (funkyPos.y + 1.f) * 0.5;
-    funkyPos = mix(funkyPos, flame, normY);
 
     mat3 invTranspose = mat3(u_ModelInvTr);
     fs_Nor = vec4(invTranspose * vec3(vs_Nor), 0);          // Pass the vertex normals to the fragment shader for interpolation.
@@ -73,6 +94,5 @@ void main()
 
     gl_Position = u_ViewProj * modelposition;// gl_Position is a built-in variable of OpenGL which is
                                              // used to render the final positions of the geometry's vertices
-    fs_Pos = u_ViewProj * u_Model * vs_Pos;
     final_Pos = gl_Position;
 }

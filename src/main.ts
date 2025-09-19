@@ -16,9 +16,14 @@ const controls = {
   'Load Scene': loadScene, // A function pointer, essentially
   baseColor : [155, 0, 0, 255],
   edgeColor : [230, 230, 0, 255],
+  tailStart: -0.5,
+  finStart: 0.85,
+  speed: 1.,
 };
 
 let icosphere: Icosphere;
+let bEye: Icosphere;    // back and front eyes of the fishy
+let fEye: Icosphere;
 let square: Square;
 let cube: Cube;
 let prevTesselations: number = 5;
@@ -27,6 +32,10 @@ let tickCount: number = 0;
 function loadScene() {
   icosphere = new Icosphere(vec3.fromValues(0, 0, 0), 1, controls.tesselations);
   icosphere.create();
+  bEye = new Icosphere(vec3.fromValues(0, 0, -4), 1, controls.tesselations);
+  bEye.create();
+  fEye = new Icosphere(vec3.fromValues(0, 0, 4), 1, controls.tesselations);
+  fEye.create();
   square = new Square(vec3.fromValues(0, 0, 0));
   square.create();
   cube = new Cube(vec3.fromValues(1, 0, 0));
@@ -46,8 +55,11 @@ function main() {
   const gui = new DAT.GUI();
   gui.add(controls, 'tesselations', 0, 8).step(1);
   gui.add(controls, 'Load Scene');
+  gui.add(controls, 'speed', -8., 8.).step(0.5);
+  gui.add(controls, 'finStart', 0.6, 1.).step(0.05);
+  gui.add(controls, 'tailStart', -3., .5).step(0.05);
   gui.addColor(controls, 'baseColor');
-  gui.addColor(controls, 'edgeColor')
+  gui.addColor(controls, 'edgeColor');
 
   // get canvas and webgl context
   const canvas = <HTMLCanvasElement> document.getElementById('canvas');
@@ -73,6 +85,11 @@ function main() {
     new Shader(gl.FRAGMENT_SHADER, require('./shaders/lambert-frag.glsl')),
   ]);
 
+  const flat = new ShaderProgram([
+    new Shader(gl.VERTEX_SHADER, require('./shaders/flat-vert.glsl')),
+    new Shader(gl.FRAGMENT_SHADER, require('./shaders/flat-frag.glsl')),
+  ])
+
   // This function will be called every frame
   function tick() {
     camera.update();
@@ -84,6 +101,10 @@ function main() {
       prevTesselations = controls.tesselations;
       icosphere = new Icosphere(vec3.fromValues(0, 0, 0), 1, prevTesselations);
       icosphere.create();
+      bEye = new Icosphere(vec3.fromValues(0, 0, -4), 1, controls.tesselations);
+      bEye.create();
+      fEye = new Icosphere(vec3.fromValues(0, 0, 4), 1, controls.tesselations);
+      fEye.create();
       //cube = new Cube(vec3.fromValues(1, 0, 0));
       //cube.create();
     }
@@ -93,7 +114,12 @@ function main() {
       // square,
       //cube,
     ], controls.baseColor.map(value => value / 255),
-    controls.edgeColor.map(value => value / 255), tickCount);
+      controls.edgeColor.map(value => value / 255), tickCount,
+      controls.finStart, controls.tailStart, controls.speed);
+    renderer.render(camera, flat, [bEye,fEye,],
+      controls.baseColor.map(value => value / 255),
+      controls.edgeColor.map(value => value / 255), tickCount,
+      controls.finStart, controls.tailStart, controls.speed);
     stats.end();
 
     ++tickCount;

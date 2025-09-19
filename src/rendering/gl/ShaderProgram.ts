@@ -31,6 +31,9 @@ class ShaderProgram {
   unifColor: WebGLUniformLocation;
   unifEdgeCol: WebGLUniformLocation;
   unifTick: WebGLUniformLocation;
+  unifTail: WebGLUniformLocation;
+  unifFin: WebGLUniformLocation;
+  unifSpeed: WebGLUniformLocation;
 
   constructor(shaders: Array<Shader>) {
     this.prog = gl.createProgram();
@@ -52,6 +55,9 @@ class ShaderProgram {
     this.unifColor      = gl.getUniformLocation(this.prog, "u_Color");
     this.unifEdgeCol    = gl.getUniformLocation(this.prog, "u_EdgeColor");
     this.unifTick       = gl.getUniformLocation(this.prog, "u_Tick");
+    this.unifFin        = gl.getUniformLocation(this.prog, "u_Fin");
+    this.unifTail       = gl.getUniformLocation(this.prog, "u_Tail");
+    this.unifSpeed      = gl.getUniformLocation(this.prog, "u_Speed");
   }
 
   use() {
@@ -100,6 +106,27 @@ class ShaderProgram {
     this.use();
     if (this.unifTick !== -1) {
       gl.uniform1i(this.unifTick, tick);
+    }
+  }
+
+  setFinVal(fin: number) {
+    this.use();
+    if (this.unifFin !== -1) {
+      gl.uniform1f(this.unifFin, fin);
+    }
+  }
+
+  setTailVal(tail: number) {
+    this.use();
+    if (this.unifTail !== -1) {
+      gl.uniform1f(this.unifTail, tail);
+    }
+  }
+
+  setSpeedVal(speed: number) {
+    this.use();
+    if (this.unifSpeed !== -1) {
+      gl.uniform1f(this.unifSpeed, speed);
     }
   }
 
