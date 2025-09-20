@@ -36,6 +36,7 @@ out vec4 fs_Nor;            // The array of normals that has been transformed by
 out vec4 fs_LightVec;       // The direction in which our virtual light lies, relative to each vertex. This is implicitly passed to the fragment shader.
 out vec4 fs_Col;            // The color of each vertex. This is implicitly passed to the fragment shader.
 out float fs_Time;
+out float fs_Diff;
 
 const vec4 lightPos = vec4(5, 5, 3, 1); //The position of our virtual light, which is used to compute the shading of
                                         //the geometry in the fragment shader.
@@ -43,7 +44,6 @@ const vec4 lightPos = vec4(5, 5, 3, 1); //The position of our virtual light, whi
 void main()
 {
     fs_Col = vs_Col;                         // Pass the vertex colors to the fragment shader for interpolation
-
     float tick = float(u_Tick);
 
     float timePulse = abs((tick * 0.001f)) * u_Speed;
@@ -61,7 +61,7 @@ void main()
     }
     
     funkyPos.x -= .75f;
-    fs_Pos = u_ViewProj * u_Model * vec4(funkyPos.xyz + vec3(0.25, 0, 0), vs_Pos.w);
+    fs_Pos = u_ViewProj * u_Model * vec4(funkyPos.xyz + vec3(1.25, 0, -5), vs_Pos.w);
     funkyPos.x *= 2.f;
     float tailStart = u_Tail;   //-0.5f;
     float finStart = u_Fin;     //0.85;
@@ -78,9 +78,12 @@ void main()
         funkyPos = mix(funkyPos, flame * 20., normZ);
     }
 
+    fs_Diff = funkyPos.x - tailStart;
+
     // Reset it into the middle. This should be done before,
     // but it was a late change and I didn't want to recalculate the numbers...
-    funkyPos.x += 1.;   
+    funkyPos.x += 2.;
+    funkyPos.z -= 5.;   
     
 
     mat3 invTranspose = mat3(u_ModelInvTr);

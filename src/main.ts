@@ -16,8 +16,8 @@ const controls = {
   'Load Scene': loadScene, // A function pointer, essentially
   baseColor : [155, 0, 0, 255],
   edgeColor : [230, 230, 0, 255],
-  tailStart: -0.5,
-  finStart: 0.85,
+  tailStart: -2.4,
+  finStart: 0.75,
   speed: 1.,
 };
 
@@ -46,8 +46,8 @@ function loadScene() {
   controls.tesselations = 5;
   controls.baseColor = [155, 0, 0, 255];
   controls.edgeColor = [230, 230, 0, 255];
-  controls.tailStart = -0.5;
-  controls.finStart = 0.85;
+  controls.tailStart = -2.4;
+  controls.finStart = 0.75;
   controls.speed = 1.;
   gui.updateDisplay();
 }
@@ -66,7 +66,7 @@ function main() {
   gui.add(controls, 'Load Scene');
   gui.add(controls, 'speed', 0., 8.).step(0.25);
   gui.add(controls, 'finStart', 0.6, 1.).step(0.05);
-  gui.add(controls, 'tailStart', -3., .5).step(0.05);
+  gui.add(controls, 'tailStart', -2.5, .5).step(0.05);
   gui.addColor(controls, 'baseColor');
   gui.addColor(controls, 'edgeColor');
 
