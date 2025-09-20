@@ -21,7 +21,7 @@ void main() {
   vec3 funkyPos = vs_Pos.xyz;
   funkyPos.z += 0.25f * vs_Pos.z;
   funkyPos *= 0.1;
-  funkyPos.x += -3.f;
+  funkyPos.x += -2.f;
   funkyPos.y += 0.2;
   vec4 modelposition = u_Model * vec4(funkyPos, vs_Pos.w); 
   fs_Pos = vs_Pos.xy;

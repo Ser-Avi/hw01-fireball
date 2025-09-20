@@ -61,7 +61,7 @@ void main()
     }
     
     funkyPos.x -= .75f;
-    fs_Pos = u_ViewProj * u_Model * vec4(funkyPos.xyz - vec3(0.75, 0, 0), vs_Pos.w);
+    fs_Pos = u_ViewProj * u_Model * vec4(funkyPos.xyz + vec3(0.25, 0, 0), vs_Pos.w);
     funkyPos.x *= 2.f;
     float tailStart = u_Tail;   //-0.5f;
     float finStart = u_Fin;     //0.85;
@@ -78,6 +78,10 @@ void main()
         funkyPos = mix(funkyPos, flame * 20., normZ);
     }
 
+    // Reset it into the middle. This should be done before,
+    // but it was a late change and I didn't want to recalculate the numbers...
+    funkyPos.x += 1.;   
+    
 
     mat3 invTranspose = mat3(u_ModelInvTr);
     fs_Nor = vec4(invTranspose * vec3(vs_Nor), 0);          // Pass the vertex normals to the fragment shader for interpolation.

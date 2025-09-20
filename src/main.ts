@@ -55,7 +55,7 @@ function main() {
   const gui = new DAT.GUI();
   gui.add(controls, 'tesselations', 0, 8).step(1);
   gui.add(controls, 'Load Scene');
-  gui.add(controls, 'speed', -8., 8.).step(0.5);
+  gui.add(controls, 'speed', 0., 8.).step(0.25);
   gui.add(controls, 'finStart', 0.6, 1.).step(0.05);
   gui.add(controls, 'tailStart', -3., .5).step(0.05);
   gui.addColor(controls, 'baseColor');
