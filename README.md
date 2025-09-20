@@ -2,6 +2,8 @@
 
 ## Objective
 
+tiny change
+
 Get comfortable with using WebGL and its shaders to generate an interesting 3D, continuous surface using a multi-octave noise algorithm.
 
 ## Getting Started
