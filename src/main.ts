@@ -29,6 +29,9 @@ let cube: Cube;
 let prevTesselations: number = 5;
 let tickCount: number = 0;
 
+
+const gui = new DAT.GUI();
+
 function loadScene() {
   icosphere = new Icosphere(vec3.fromValues(0, 0, 0), 1, controls.tesselations);
   icosphere.create();
@@ -40,6 +43,13 @@ function loadScene() {
   square.create();
   cube = new Cube(vec3.fromValues(1, 0, 0));
   cube.create();
+  controls.tesselations = 5;
+  controls.baseColor = [155, 0, 0, 255];
+  controls.edgeColor = [230, 230, 0, 255];
+  controls.tailStart = -0.5;
+  controls.finStart = 0.85;
+  controls.speed = 1.;
+  gui.updateDisplay();
 }
 
 function main() {
@@ -52,7 +62,6 @@ function main() {
   document.body.appendChild(stats.domElement);
 
   // Add controls to the gui
-  const gui = new DAT.GUI();
   gui.add(controls, 'tesselations', 0, 8).step(1);
   gui.add(controls, 'Load Scene');
   gui.add(controls, 'speed', 0., 8.).step(0.25);
